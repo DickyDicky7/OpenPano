@@ -19,7 +19,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -B build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
 
       - name: Build with CMake
         run: |
@@ -33,11 +33,8 @@ jobs:
           } elseif (Test-Path build\src\image-stitching.exe) {
             Copy-Item build\src\image-stitching.exe bin\
           }
-          if (Test-Path build\src\Release\openpano.dll) {
-            Copy-Item build\src\Release\openpano.dll bin\
-          } elseif (Test-Path build\src\openpano.dll) {
-            Copy-Item build\src\openpano.dll bin\
-          }
+          Get-ChildItem -Path build\src\Release\*.dll -ErrorAction SilentlyContinue | Copy-Item -Destination bin\
+          Get-ChildItem -Path build\src\*.dll -ErrorAction SilentlyContinue | Copy-Item -Destination bin\
           if (Test-Path src\config.cfg) {
             Copy-Item src\config.cfg bin\
           }
