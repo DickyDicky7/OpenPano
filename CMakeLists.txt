@@ -28,6 +28,7 @@ else()
 endif()
 if (WIN32)
 	add_definitions( -DUNICODE -D_UNICODE)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
 

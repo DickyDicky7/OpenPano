@@ -9,6 +9,8 @@ import subprocess
 import re
 
 EXEC = './image-stitching'
+if not os.path.exists(EXEC) and os.path.exists(EXEC + '.exe'):
+    EXEC = EXEC + '.exe'
 THRESHOLD = 0.8   # Actual size should be within (0.8, 1/0.8) of the truth
 
 def good_size(x_test, x_truth):
@@ -40,10 +42,19 @@ def test_final_size(image_globs, w, h):
 
 if __name__ == '__main__':
     if not os.path.isdir('example-data'):
-        ret = os.system('wget --progress=dot https://github.com/ppwwyyxx/OpenPano/releases/download/0.1/example-data.tgz')
-        assert ret == 0
-        ret = os.system('tar xzf example-data.tgz')
-        assert ret == 0
+        url = 'https://github.com/ppwwyyxx/OpenPano/releases/download/0.1/example-data.tgz'
+        if sys.platform == 'win32':
+            import urllib.request
+            import tarfile
+            print("Downloading example-data...")
+            urllib.request.urlretrieve(url, 'example-data.tgz')
+            with tarfile.open('example-data.tgz', 'r:gz') as tar:
+                tar.extractall()
+        else:
+            ret = os.system('wget --progress=dot ' + url)
+            assert ret == 0
+            ret = os.system('tar xzf example-data.tgz')
+            assert ret == 0
     test_final_size('example-data/zijing/*', 6488, 1100)
     test_final_size('example-data/CMU1/*', 8000, 1449)
     print("Tests Passed")

@@ -153,7 +153,7 @@ To get the best stitching quality:
 	parameters are needed to undistort the images.
 
 ## TODOs
-+ Github Actions for macOS and Windows
++ Github Actions for macOS (Windows support added)
 + apply pairwise matching for translation mode as well
 + run bundle adjustment on sphere lens instead of perspective lens
 + improve feature detector and matching

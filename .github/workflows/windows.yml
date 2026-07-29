@@ -1,0 +1,49 @@
+name: Windows Build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    name: Build (Windows MSVC)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies via vcpkg
+        run: |
+          vcpkg install eigen3:x64-windows libjpeg-turbo:x64-windows
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build with CMake
+        run: |
+          cmake --build build --config Release
+
+      - name: Prepare build artifacts
+        run: |
+          New-Item -ItemType Directory -Path bin -Force
+          if (Test-Path build\src\Release\image-stitching.exe) {
+            Copy-Item build\src\Release\image-stitching.exe bin\
+          } elseif (Test-Path build\src\image-stitching.exe) {
+            Copy-Item build\src\image-stitching.exe bin\
+          }
+          if (Test-Path build\src\Release\openpano.dll) {
+            Copy-Item build\src\Release\openpano.dll bin\
+          } elseif (Test-Path build\src\openpano.dll) {
+            Copy-Item build\src\openpano.dll bin\
+          }
+          if (Test-Path src\config.cfg) {
+            Copy-Item src\config.cfg bin\
+          }
+
+      - name: Upload Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openpano-windows-x64
+          path: bin/
