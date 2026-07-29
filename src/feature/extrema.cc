@@ -26,8 +26,8 @@ vector<Coor> ExtremaDetector::get_raw_extrema() const {
 
 			auto v = get_local_raw_extrema(i, j);
 			for (auto& c : v) {
-				ret.emplace_back((float)c.x / w * dog.origw,
-						(float)c.y / h * dog.origh);
+				ret.emplace_back(int((float)c.x / w * dog.origw),
+						int((float)c.y / h * dog.origh));
 			}
 		}
 	return ret;

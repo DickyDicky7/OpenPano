@@ -9,12 +9,6 @@
 #include <iostream>
 #include <cstdarg>
 #include <map>
-#ifdef _MSC_VER
-#include <filesystem>
-using namespace std::tr2::sys;
-#else
-#include <libgen.h>
-#endif
 using namespace std;
 
 #include "utils.hh"
@@ -37,15 +31,12 @@ void __print_debug__(const char *file, const char *func, int line, const char *f
 		colormap[line] = TERM_COLOR(color);
 	}
 
-#ifdef _MSC_VER
-  std::tr2::sys::path _fbase(file);
-  auto fbase = _fbase.stem().c_str();
-#else
-  char *fdup = strdup(file);
-  char *fbase = basename(fdup);
-#endif
-  c_fprintf(colormap[line].c_str(), stderr, "[%s@%s:%d] ", func, fbase, line);
-  free(fdup);
+	const char *fbase = file;
+	for (const char *p = file; *p; ++p) {
+		if (*p == '/' || *p == '\\')
+			fbase = p + 1;
+	}
+	c_fprintf(colormap[line].c_str(), stderr, "[%s@%s:%d] ", func, fbase, line);
 
 	va_list ap;
 	va_start(ap, fmt);
